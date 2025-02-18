@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retirement Countdown Calculator</title>
+    <style>
+        /* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #6e7bff, #a1c4fd);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 0 20px;
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    animation: fadeIn 0.8s ease-out;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 8px;
+    display: block;
+    font-weight: 500;
+}
+
+input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+input[type="date"]:focus {
+    outline: none;
+    border-color: #6e7bff;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #6e7bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #4c5bf9;
+}
+
+.result {
+    margin-top: 30px;
+    font-size: 1rem;
+    color: #444;
+    font-weight: 500;
+    background-color: #f0f4ff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.result p {
+    margin-bottom: 10px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Retirement Countdown</h1>
+        <form id="retirementForm">
+            <div class="input-group">
+                <label for="dob">Enter Your Date of Birth:</label>
+                <input type="date" id="dob" max="2025-12-31" required>
+            </div>
+            <button type="button" onclick="calculateRetirementTime()">Calculate</button>
+        </form>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        // Define the retirement age (e.g., 60)
+const RETIREMENT_AGE = 60;
+
+function calculateRetirementTime() {
+    // Get the user's date of birth from the form
+    const dobInput = document.getElementById('dob').value;
+    if (!dobInput) {
+        alert('Please enter your date of birth');
+        return;
+    }
+
+    // Convert the input date to a Date object
+    const dob = new Date(dobInput);
+    const today = new Date();
+
+    // Calculate the user's age
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDifference = today.getMonth() - dob.getMonth();
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dob.getDate())) {
+        age--; // Adjust if the birthday hasn't occurred yet this year
+    }
+
+    // Check if the user has already reached retirement age
+    if (age >= RETIREMENT_AGE) {
+        document.getElementById('result').innerHTML = "You have already reached your retirement age!";
+    } else {
+        // Calculate the remaining years, months, and days until retirement
+        const yearsUntilRetirement = RETIREMENT_AGE - age;
+        const retirementDate = new Date(dob.getFullYear() + RETIREMENT_AGE, dob.getMonth(), dob.getDate());
+
+        const timeRemaining = getTimeRemaining(retirementDate, today);
+
+        // Display the result
+        document.getElementById('result').innerHTML = `
+            You will retire on ${retirementDate.toDateString()}.
+            <br>
+            Time remaining until retirement:
+            <br>
+            ${timeRemaining.years} years, ${timeRemaining.months} months, and ${timeRemaining.days} days.
+        `;
+    }
+}
+
+// Function to calculate time remaining
+function getTimeRemaining(retirementDate, currentDate) {
+    const years = retirementDate.getFullYear() - currentDate.getFullYear();
+    const months = retirementDate.getMonth() - currentDate.getMonth();
+    const days = retirementDate.getDate() - currentDate.getDate();
+
+    let actualYears = years;
+    let actualMonths = months;
+    let actualDays = days;
+
+    if (actualDays < 0) {
+        actualMonths -= 1;
+        actualDays += new Date(retirementDate.getFullYear(), retirementDate.getMonth(), 0).getDate(); // Adjust days in case of negative days
+    }
+
+    if (actualMonths < 0) {
+        actualYears -= 1;
+        actualMonths += 12; // Adjust months if negative
+    }
+
+    return { years: actualYears, months: actualMonths, days: actualDays };
+}
+
+    </script>
+</body>
+</html>
